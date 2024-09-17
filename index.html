@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple POS System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px;
+            margin-top: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Simple POS System</h1>
+
+    <div class="container">
+        <!-- Inventory Management -->
+        <div class="section" id="inventory-section">
+            <h2>Inventory</h2>
+            <input type="text" id="product-name" placeholder="Product Name">
+            <input type="number" id="product-quantity" placeholder="Quantity" min="0">
+            <input type="number" id="product-price" placeholder="Price" step="0.01" min="0">
+            <button onclick="addInventory()">Add Product</button>
+
+            <h3>Inventory List</h3>
+            <table id="inventory-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Sales Management -->
+        <div class="section" id="sales-section">
+            <h2>Sales</h2>
+            <input type="text" id="sale-product-name" placeholder="Product Name">
+            <input type="number" id="sale-quantity" placeholder="Quantity" min="0">
+            <button onclick="addSale()">Record Sale</button>
+
+            <h3>Sales List</h3>
+            <table id="sales-table">
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="section" id="dashboard-section">
+            <h2>Dashboard</h2>
+            <p>Total Inventory Value: <span id="total-inventory-value">$0.00</span></p>
+        </div>
+    </div>
+
+    <script>
+        // In-memory data store
+        const inventory = [];
+        const sales = [];
+
+        function updateInventoryTable() {
+            const tableBody = document.querySelector('#inventory-table tbody');
+            tableBody.innerHTML = '';
+            inventory.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.quantity}</td>
+                    <td>$${item.price.toFixed(2)}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+            updateDashboard();
+        }
+
+        function updateSalesTable() {
+            const tableBody = document.querySelector('#sales-table tbody');
+            tableBody.innerHTML = '';
+            sales.forEach(sale => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${sale.productName}</td>
+                    <td>${sale.quantity}</td>
+                    <td>${sale.date}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function updateDashboard() {
+            const totalValue = inventory.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+            document.getElementById('total-inventory-value').textContent = `$${totalValue.toFixed(2)}`;
+        }
+
+        function addInventory() {
+            const name = document.getElementById('product-name').value;
+            const quantity = parseInt(document.getElementById('product-quantity').value) || 0;
+            const price = parseFloat(document.getElementById('product-price').value) || 0;
+
+            if (name && quantity > 0 && price > 0) {
+                inventory.push({ name, quantity, price });
+                updateInventoryTable();
+                document.getElementById('product-name').value = '';
+                document.getElementById('product-quantity').value = '';
+                document.getElementById('product-price').value = '';
+            } else {
+                alert('Please fill out all fields correctly.');
+            }
+        }
+
+        function addSale() {
+            const productName = document.getElementById('sale-product-name').value;
+            const quantity = parseInt(document.getElementById('sale-quantity').value) || 0;
+
+            if (productName && quantity > 0) {
+                const product = inventory.find(item => item.name === productName);
+
+                if (product && product.quantity >= quantity) {
+                    sales.push({
+                        productName,
+                        quantity,
+                        date: new Date().toLocaleDateString()
+                    });
+
+                    product.quantity -= quantity;
+                    updateInventoryTable();
+                    updateSalesTable();
+                    document.getElementById('sale-product-name').value = '';
+                    document.getElementById('sale-quantity').value = '';
+                } else {
+                    alert('Insufficient quantity or product not found.');
+                }
+            } else {
+                alert('Please fill out all fields correctly.');
+            }
+        }
+
+        // Initial UI setup
+        updateInventoryTable();
+        updateSalesTable();
+    </script>
+
+</body>
+</html>
