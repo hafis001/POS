@@ -1,0 +1,30 @@
+pos-system/
+│
+├── backend/
+│   ├── app.js
+│   ├── routes/
+│   │   ├── inventory.js
+│   │   ├── sales.js
+│   │   ├── customers.js
+│   │   └── employees.js
+│   └── models/
+│       ├── inventory.js
+│       ├── sales.js
+│       ├── customers.js
+│       └── employees.js
+│
+├── frontend/
+│   ├── public/
+│   │   └── index.html
+│   ├── src/
+│   │   ├── App.js
+│   │   ├── components/
+│   │   │   ├── Dashboard.js
+│   │   │   ├── Inventory.js
+│   │   │   ├── Sales.js
+│   │   │   ├── Customers.js
+│   │   │   └── Employees.js
+│   │   └── index.js
+│   └── package.json
+│
+└── README.md
